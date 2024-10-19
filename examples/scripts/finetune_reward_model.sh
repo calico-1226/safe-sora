@@ -28,6 +28,14 @@ MM_MLP_ADAPTER_PATH="LanguageBind/Video-LLaVA-Pretrain-7B/mm_projector.bin"
 OUTPUT_DIR="./outputs"
 DIMENSION="helpfulness"
 
+# VIDEO_DIR="/home/juntao/Projects/safe-sora/data/SafeSora/videos"
+# TRAIN_DATA_PATH="/home/juntao/Projects/safe-sora/data/SafeSora/config-train.json.gz"
+# EVAL_DATA_PATH="/home/juntao/Projects/safe-sora/data/SafeSora/config-test.json.gz"
+# MODEL_NAME_OR_PATH="/home/juntao/Models/LanguageBind/Video-LLaVA-7B"
+# MM_MLP_ADAPTER_PATH="/home/juntao/Models/LanguageBind/Video-LLaVA-Pretrain-7B/mm_projector.bin"
+# OUTPUT_DIR="/home/juntao/Projects/Learning/safe-sora/examples/outputs/goodgood"
+# DIMENSION="helpfulness"
+
 while [[ "$#" -gt 0 ]]; do
     arg="$1"
     shift

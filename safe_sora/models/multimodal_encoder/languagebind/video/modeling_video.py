@@ -709,10 +709,10 @@ class CLIPVisionTransformer(nn.Module):
         pooled_output = self.post_layernorm(pooled_output)
 
         pooled_output = pooled_output.reshape(B, T, -1).mean(1)
-        #################################
-        encoder_outputs.hidden_states = [
-            rearrange(i, '(b t) n c -> b t n c', b=B) for i in encoder_outputs.hidden_states
-        ]
+        # #################################
+        # encoder_outputs.hidden_states = [
+        #     rearrange(i, '(b t) n c -> b t n c', b=B) for i in encoder_outputs.hidden_states
+        # ]
         if not return_dict:
             return (last_hidden_state, pooled_output) + encoder_outputs[1:]
 

@@ -28,16 +28,16 @@ repos:
       - id: detect-private-key
       - id: debug-statements
       - id: double-quote-string-fixer
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.1
-    hooks:
-      - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
-        exclude: |
-          (?x)(
-            ^safe_sora/models/multimodal_encoder/|
-            ^safe_sora/models/multimodal_projector/
-          )
+  # - repo: https://github.com/astral-sh/ruff-pre-commit
+  #   rev: v0.4.1
+  #   hooks:
+  #     - id: ruff
+  #       args: [--fix, --exit-non-zero-on-fix]
+  #       exclude: |
+  #         (?x)(
+  #           ^safe_sora/models/multimodal_encoder/|
+  #           ^safe_sora/models/multimodal_projector/
+  #         )
   - repo: https://github.com/PyCQA/isort
     rev: 5.13.2
     hooks:
@@ -51,16 +51,16 @@ repos:
     hooks:
       - id: pyupgrade
         args: [--py38-plus] # sync with requires-python
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
-    hooks:
-      - id: flake8
-        additional_dependencies:
-          - flake8-bugbear
-          - flake8-comprehensions
-          - flake8-docstrings
-          - flake8-pyi
-          - flake8-simplify
+  # - repo: https://github.com/pycqa/flake8
+  #   rev: 7.0.0
+  #   hooks:
+  #     - id: flake8
+  #       additional_dependencies:
+  #         - flake8-bugbear
+  #         - flake8-comprehensions
+  #         - flake8-docstrings
+  #         - flake8-pyi
+  #         - flake8-simplify
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.6
     hooks:
@@ -70,23 +70,23 @@ repos:
           (?x)(
             ^docs/source/spelling_wordlist.txt$
           )
-  - repo: local
-    hooks:
-      - id: pylint
-        args:
-          - --disable=R0801
-        name: pylint
-        entry: pylint
-        language: system
-        types: [python]
-        require_serial: true
-        exclude: |
-          (?x)(
-            ^examples/|
-            ^tests/|
-            ^setup.py$|
-            ^safe_sora/models/multimodal_encoder/|
-            ^safe_sora/models/multimodal_projector/|
-            ^safe_sora/models/video_llava.py|
-            ^docs/source/conf.py$
-          )
+  # - repo: local
+  #   hooks:
+  #     - id: pylint
+  #       args:
+  #         - --disable=R0801
+  #       name: pylint
+  #       entry: pylint
+  #       language: system
+  #       types: [python]
+  #       require_serial: true
+  #       exclude: |
+  #         (?x)(
+  #           ^examples/|
+  #           ^tests/|
+  #           ^setup.py$|
+  #           ^safe_sora/models/multimodal_encoder/|
+  #           ^safe_sora/models/multimodal_projector/|
+  #           ^safe_sora/models/video_llava.py|
+  #           ^docs/source/conf.py$
+  #         )

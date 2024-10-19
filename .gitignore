@@ -1,11 +1,13 @@
 ##### Project Specification #####
+.outputs/
 outputs/
 wandb/
 test/
 data/
 checkpoints/
 cache_dir
-experiments/
+experiments/bias_test_videos
+experiments/output
 
 ##### Python.gitignore #####
 # Byte-compiled / optimized / DLL files

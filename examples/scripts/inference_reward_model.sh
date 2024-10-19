@@ -20,12 +20,13 @@ if [ -z "${BASH_VERSION}" ]; then
 	exit 1
 fi
 
-MODEL_NAME_OR_PATH="./checkpoints/reward-helpfulness"
-EVAL_DATA_PATH="./SafeSora-Label/config-test.json.gz"
-IMAGE_DIR="./SafeSora/videos"
-VIDEO_DIR="./SafeSora/videos"
+MODEL_NAME_OR_PATH="/home/juntao/Projects/safe-sora/checkpoints/reward-0704"
+DATA_DIR="/home/juntao/Projects/safe-sora-CTL/dataset/playground/eval/old_prompt"
+EVAL_DATA_PATH="${DATA_DIR}/eval_config.json"
+IMAGE_DIR="${DATA_DIR}/videos"
+VIDEO_DIR="${DATA_DIR}/videos"
 
-OUTPUT_DIR="examples/outputs"
+OUTPUT_DIR="${DATA_DIR}"
 
 while [[ "$#" -gt 0 ]]; do
 	arg="$1"

@@ -20,7 +20,11 @@
 
 """Module for Safe-Sora."""
 
-from safe_sora.models.score_model import LlavaLlamaForScore, LlavaScoreConfig, ScoreModelOutput
+from safe_sora.models.score_models.modeling_videollava import (
+    LlavaLlamaForScore,
+    LlavaScoreConfig,
+    ScoreModelOutput,
+)
 
 
 __all__ = [

@@ -46,7 +46,7 @@ from safe_sora.models.constants import (
     DEFAULT_VIDEO_PATCH_TOKEN,
     MAX_VIDEO_LENGTH,
 )
-from safe_sora.models.score_model import ScoreModelOutput
+from safe_sora.models.score_models.modeling_videollava import ScoreModelOutput
 from safe_sora.utils import order_pick_k
 from utils import preprocess_multimodal, preprocess_text
 
@@ -134,7 +134,7 @@ class LazyVideoDataset(Dataset):
     ) -> None:
         super().__init__()
 
-        self.dataset = VideoDataset.load(config_path, video_dir=video_dir)
+        self.dataset = VideoDataset.load(config_path)
         self.tokenizer = tokenizer
         self.video_processor = video_processor
         self.data_args = data_args
@@ -158,9 +158,10 @@ class LazyVideoDataset(Dataset):
         video_file = video_config['video_path']
         video_file = video_file if isinstance(video_file, list) else [video_file]
         video_file = order_pick_k(video_file, MAX_VIDEO_LENGTH)
-        image = [
-            self.video_processor(i, return_tensors='pt')['pixel_values'][0] for i in video_file
-        ]
+        print(video_file)
+        image = []
+        for i in video_file:
+            image.append(self.video_processor(i, return_tensors='pt')['pixel_values'][0])
 
         sources = preprocess_multimodal(
             copy.deepcopy([conversation]),
@@ -307,7 +308,6 @@ def main() -> None:
             'images': [image.half().to(model.device) for image in batch['images']],
             'attention_mask': batch['attention_mask'].to(model.device),
         }
-
         with torch.no_grad():
             outputs: ScoreModelOutput = model(**batch)
             end_scores = outputs.end_scores
