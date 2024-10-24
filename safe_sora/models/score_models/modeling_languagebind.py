@@ -98,6 +98,9 @@ class LanguageBindForScore(torch.nn.Module):
         # scores = torch.cat([higher_scores, lower_scores], dim=0)
 
         loss = -(F.logsigmoid(higher_scores - lower_scores)).mean()
+        # if higher_scores is larger than lower_score, add loss to motivate the model make the difference bigger
+        # leaky_relu = torch.nn.LeakyReLU(negative_slope=0.1)
+        # loss = -F.sigmoid(leaky_relu(higher_scores - lower_scores)).mean()
 
         # pair_scores = torch.stack([torch.stack([higher_scores[i], lower_scores[i]])
         #                            for i in range(0,len(higher_scores))])

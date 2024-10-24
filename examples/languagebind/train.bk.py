@@ -22,10 +22,10 @@ from safe_sora.video_utils import load_video_from_path
 
 class HelpfulnessDataset(Dataset):
 
-    def __init__(self, tokenizer: PreTrainedTokenizer):
+    def __init__(self, tokenizer: PreTrainedTokenizer, data_path):
         self.tokenizer = tokenizer
         self.data = PairDataset.load(
-            '/home/juntao/Data/DVG/backup/240p/gpt_preference.json',
+            data_path,
             video_dir='/home/juntao/Data/DVG/backup/240p/videos',
         )
 
@@ -150,7 +150,7 @@ def parse_args():
 
     args = parser.parse_args()
 
-    args.seed = 100
+    args.seed = 42
     args.gradient_checkpointing = True
     args.lr = 5e-4
     args.coef_lr = 1e-3
@@ -158,7 +158,7 @@ def parse_args():
     args.warmup = 200
     args.precision = 'amp_bf16'
 
-    args.epoch = 1
+    args.epoch = 5
     args.per_device_batch_size = 4
 
     return args
@@ -262,29 +262,46 @@ def main():
         eps=1e-6,
     )
 
-    data = HelpfulnessDataset(tokenizer=tokenizer)
+    train_data = HelpfulnessDataset(
+        tokenizer=tokenizer,
+        data_path='/home/juntao/Data/DVG/backup/240p/train_data.json',
+    )
+    test_data = HelpfulnessDataset(
+        tokenizer=tokenizer,
+        data_path='/home/juntao/Data/DVG/backup/240p/test_data.json',
+    )
+
     barrier()
 
-    dataloader = DataLoader(
-        data,
-        sampler=DistributedSampler(data, shuffle=True),
+    train_dataloader = DataLoader(
+        train_data,
+        sampler=DistributedSampler(train_data, shuffle=True),
         collate_fn=PreferenceCollator(tokenizer, args.device),
         batch_size=args.per_device_batch_size,
     )
-    total_steps = args.epoch * len(dataloader)
+    test_dataloader = DataLoader(
+        test_data,
+        sampler=DistributedSampler(test_data, shuffle=False),
+        collate_fn=PreferenceCollator(tokenizer, args.device),
+        batch_size=args.per_device_batch_size,
+    )
+
+    total_steps = args.epoch * len(train_dataloader)
     scheduler = cosine_lr(optimizer, args.lr, args.warmup, total_steps)
 
+    current_time = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
     logger = Logger(
         log_type='wandb',
-        log_dir='./outputs/test',
-        log_project='test',
-        log_run_name='test',
+        log_dir='./outputs/reward_modeling',
+        log_project='Value-gradient',
+        log_run_name=f'rm-{current_time}',
+        log_entity='pku_rl',
     )
 
     bar = tqdm(total=total_steps, disable=not is_main_process())
     step = 0
     for epoch in range(args.epoch):
-        for batch in dataloader:
+        for batch in train_dataloader:
             optimizer.zero_grad()
 
             with torch.amp.autocast('cuda', dtype=torch.bfloat16):
@@ -303,9 +320,28 @@ def main():
 
             step += 1
             bar.update(1)
+
+        model.module.save(f'.outputs/reward_modeling/{logger.log_run_name}/epoch_{epoch}/')
+
+        # evaluation
+        with torch.no_grad():
+            acc_list = []
+            for batch in test_dataloader:
+                _, test_info = model(**batch)
+                acc_list.append(test_info['accuracy'])
+
+            avg_acc = sum(acc_list) / len(acc_list)
+            test_info = {'test_avg_acc': avg_acc}
+            for key, value in test_info.items():
+                if isinstance(value, torch.Tensor):
+                    test_info[key] = get_all_reduce_mean(value.mean()).item()
+
+            logger.print(f'Step eval: {step} - ', test_info)
+            logger.log(test_info, step=step)
+
     bar.close()
     if is_main_process():
-        model.module.save('./outputs/test/')
+        model.module.save(f'./outputs/reward_modeling/{logger.log_run_name}/final/')
     logger.close()
 
 

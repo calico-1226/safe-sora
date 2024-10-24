@@ -25,9 +25,9 @@ class HelpfulnessDataset(Dataset):
     def __init__(self, tokenizer: PreTrainedTokenizer):
         self.tokenizer = tokenizer
         self.data = PairDataset.load(
-            '/home/juntao/Data/DVG/safesora/config.json',
-            video_dir='/home/juntao/Data/DVG/safesora/videos',
-        )[:20000]
+            '/home/juntao/Projects/safe-sora/data/video_reward/config.json',
+            video_dir='/home/juntao/Projects/safe-sora/data/video_reward/videos',
+        )[:1000]
 
         self.input_ids = [
             self.tokenizer(
@@ -169,8 +169,8 @@ def parse_args():
     args.warmup = 200
     args.precision = 'amp_bf16'
 
-    args.epoch = 1
-    args.per_device_batch_size = 1
+    args.epoch = 3
+    args.per_device_batch_size = 8
 
     return args
 

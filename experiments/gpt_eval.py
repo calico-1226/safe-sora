@@ -237,36 +237,25 @@ def annotate_preference(
     )
     assert len(messages) == len(results)
 
-    num_agreement = 0
-    num_all = 0
-
     for line, result in zip(data, results):
-        if result[preference_key] is not None:
-            num_all += 1
-            if preference_key in ['helpfulness', 'harmlessness']:
-                if line[preference_key] == result[preference_key]:
-                    num_agreement += 1
-            elif line['sub_preferences'][preference_key] == result[preference_key]:
-                num_agreement += 1
+        # if result[preference_key] is not None:
+        #     num_all += 1
+        #     if preference_key in ['helpfulness', 'harmlessness']:
+        #         if line[preference_key] == result[preference_key]:
+        #             num_agreement += 1
+        #     elif line['sub_preferences'][preference_key] == result[preference_key]:
+        #         num_agreement += 1
 
         if 'gpt_preference' not in line:
             line['gpt_preference'] = {}
         line['gpt_preference'][preference_key] = result[preference_key]
+        line[preference_key] = result[preference_key]
 
         del line['video_0']['base64frames']
         del line['video_1']['base64frames']
 
     with open(os.path.join(output_dir, 'annotation.json'), 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-
-    print(f'Agreement count: {num_agreement}')
-    print(f'All count: {num_all}')
-    print(f'Agreement ratio: {num_agreement / num_all}')
-
-    with open(os.path.join(output_dir, 'agreement.txt'), 'w', encoding='utf-8') as f:
-        f.write(f'Agreement count: {num_agreement}\n')
-        f.write(f'All count: {num_all}\n')
-        f.write(f'Agreement ratio: {num_agreement / num_all}\n')
 
 
 def main() -> None:

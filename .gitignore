@@ -4,6 +4,7 @@ outputs/
 wandb/
 test/
 data/
+models/
 checkpoints/
 cache_dir
 experiments/bias_test_videos
